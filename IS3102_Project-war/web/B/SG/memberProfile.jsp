@@ -11,6 +11,7 @@
     <body>
         <script>
             function validatePassword() {
+                <% Member member = (Member) session.getAttribute("member"); %>
                 var password = document.getElementById("password").value;
                 var repassword = document.getElementById("repassword").value;
                 var ok = true;
@@ -49,13 +50,14 @@
                 </div>
             </section>
             <div class="container">
-                <%%>
+                                    <%
+                        String email = (String) session.getAttribute("memberEmail");
+                %>
                 <jsp:include page="/displayMessageLong.jsp" />
                 <!-- /.warning -->
                 <div class="col-md-12">
-                    <%
-                        try {
-                            Member member = (Member) session.getAttribute("member");
+                    <%                        
+                        try {                           
                             DecimalFormat df = new DecimalFormat("#.##");
                     %>
                     <div class="row" style="min-height: 500px;">
@@ -78,25 +80,33 @@
                                         <h4>Personal Information</h4>
                                         <div class="form-group">
                                             <label>Name</label>
-                                            <input class="form-control" required="true" name="name" type="text" value="">
+                                            <input class="form-control" required="true" name="memberName" type="text" value="<%if (member.getName() == null) {
+                                                    out.println("");
+                                                } else {
+                                                    out.println(member.getName());
+                                                }%>">
                                         </div>
                                         <div class="form-group">
                                             <label>E-mail Address</label>
-                                            <input class="form-control" required="true" value="" disabled/>
+                                            <input class="form-control" required="true" value="<%=email%>" disabled/>
                                         </div>
                                         <div class="form-group">
                                             <label>Phone</label>
-                                            <input class="form-control" required="true" type="text" name="phone" value="">
+                                            <input class="form-control" id="phone" required="true" type="text" name="memberPhone" value="<%if (member.getPhone() == null) {
+                                                    out.println("");
+                                                } else {
+                                                    out.println(member.getPhone());
+                                                }%>">
                                         </div>
                                         <div class="form-group">
                                             <label>Country</label>
                                             <%if (member.getCity() != null && member.getCity() != "") {%>
-                                            <select name="country" disabled>
+                                            <select id="country" name="memberCountry" disabled>
                                                 <option value="<%=member.getCity()%>"><%=member.getCity()%></option>
                                                 <%} else {%>
-                                                <select name="country">
+                                                <select name="memberCountry">
                                                     <%}%>
-                                                    <option value=""></option>
+                                                    <option value="<%=member.getCity()%>" selected><%=member.getCity()%></option>
                                                     <option value="Afganistan">Afghanistan</option>
                                                     <option value="Albania">Albania</option>
                                                     <option value="Algeria">Algeria</option>
@@ -348,11 +358,15 @@
                                         </div>
                                         <div class="form-group">
                                             <label>Address</label>
-                                            <input class="form-control" type="text" required="true" name="address" value="">
+                                            <input id="address" class="form-control" type="text" required="true" name="memberAddress" value="<%if (member.getAddress() == null) {
+                                                    out.println("");
+                                                } else {
+                                                    out.println(member.getAddress());
+                                                }%>">
                                         </div>
                                         <div class="form-group">
                                             <label>Set Challenge Question</label>
-                                            <select name="securityQuestion">
+                                            <select id="securityQuestion" name="memberQuestion">
                                                 <%int securityQn = 0;
                                                     if (member.getSecurityQuestion() == null) {
                                                         securityQn = 0;
@@ -369,7 +383,7 @@
                                                         out.println("selected");
                                                     }%>>What is your favourite animal?</option>
                                             </select>
-                                            <input class="form-control" type="text" required="true" name="securityAnswer" value="<%if (member.getSecurityAnswer() == null) {
+                                            <input id="securityAnswer" class="form-control" type="text" required="true" name="memberAnswer" value="<%if (member.getSecurityAnswer() == null) {
                                                     out.println("");
                                                 } else {
                                                     out.println(member.getSecurityAnswer());
@@ -377,11 +391,11 @@
                                         </div>
                                         <div class="form-group">
                                             <label>Age</label>
-                                            <input class="form-control" name="age" step="1" type="number" min="1" max="150" value="">
+                                            <input id="age" class="form-control" name="memberAge" step="1" type="number" min="1" max="150" value="<%=member.getAge()%>">
                                         </div>
                                         <div class="form-group">
                                             <label>Income per annum (in USD)</label>
-                                            <input class="form-control" name="income" step="1" type="number" min="0" max="2147483646" value="">
+                                            <input id="income" class="form-control" name="memberIncome" step="1" type="number" min="0" max="2147483646" value="<%=member.getIncome()%>">
                                         </div>
                                         <div class="form-group">
                                             <input type="checkbox" name="serviceLevelAgreement"> Allow us to use your particulars to serve you better?<br/>Checking the box above indicates that you agree to our <a onclick="pdpaWindow()">personal data protection policy.</a>
@@ -413,7 +427,7 @@
                     </div>
                 </div>
                 <%
-                        session.removeAttribute("member");
+                        session.removeAttribute("updated");
                     } catch (Exception ex) {
                         ex.printStackTrace();
                         response.sendRedirect("index.jsp");
